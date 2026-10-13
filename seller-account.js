@@ -23,6 +23,12 @@ async function loadProfile(){
  if(r.ok){const rows=await r.json();currentProfile=rows[0]||null}
 }
 function showAccount(){
+ // Explicit demo mode is for storefront testing only; it grants no real-data permissions.
+ if(new URLSearchParams(window.location.search).get("mode")==="demo"){
+  const demoHtml = '<div class="note">أنت الآن في وضع تجريبي ببيانات نموذجية. يمكنك اختبار التصفح والسلة وواجهة الطلب، ولن تُحفظ طلبات أو بيانات حقيقية.</div><div class="cart-line"><span class="emoji">🧪</span><div class="details"><h3>المتجر التجريبي</h3><p>المنتجات والأسعار المعروضة أمثلة للاختبار</p></div></div><button class="primary" onclick="closeModal();showCategories()">تجربة التصنيفات</button><button class="primary" onclick="closeModal();openCart()">تجربة سلة المشتريات</button><button class="primary" style="background:#f5efe4;color:#153c2c;border:1px solid #d8cdb9" onclick="history.replaceState(null,'',window.location.pathname+window.location.hash);closeModal();showAccount()">الانتقال إلى تسجيل الدخول الحقيقي</button>';
+  openModal("وضع المطوّر التجريبي",demoHtml);
+  return;
+ }
  if(currentSession&&currentSession.user){
   // A confirmed auth session is valid even if the profile query is temporarily empty.
   // Fall back to signup metadata so users are not incorrectly sent back to the login form.
