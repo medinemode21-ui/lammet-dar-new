@@ -5,6 +5,14 @@ let currentSession=null, currentProfile=null;
 function authHeaders(){return {"apikey":SB_KEY,"Authorization":"Bearer "+(currentSession?currentSession.access_token:SB_KEY),"Content-Type":"application/json"}}
 async function restoreSession(){
  try{
+  // Capture the session returned by Supabase after the email-confirmation redirect.
+  const hash=new URLSearchParams(window.location.hash.slice(1));
+  const redirectedAccess=hash.get("access_token"), redirectedRefresh=hash.get("refresh_token");
+  if(redirectedAccess){
+   currentSession={access_token:redirectedAccess,refresh_token:redirectedRefresh||"",token_type:hash.get("token_type")||"bearer",expires_in:Number(hash.get("expires_in")||3600),user:null};
+   localStorage.setItem("lammetDarSession",JSON.stringify(currentSession));
+   history.replaceState(null,"",window.location.pathname+window.location.search);
+  }
   const saved=localStorage.getItem("lammetDarSession");
   if(saved){currentSession=JSON.parse(saved);const r=await fetch(SB_URL+"/auth/v1/user",{headers:authHeaders()});if(!r.ok)throw new Error("expired");currentSession.user=await r.json();await loadProfile();}
  }catch(e){currentSession=null;currentProfile=null;localStorage.removeItem("lammetDarSession")}
@@ -38,7 +46,8 @@ async function signUp(){
  if(!name||!email||password.length<8){box.textContent="أدخلي الاسم والبريد وكلمة مرور من 8 أحرف على الأقل.";return}
  box.textContent="جارٍ إنشاء الحساب…";
  try{
-  const r=await fetch(SB_URL+"/auth/v1/signup",{method:"POST",headers:{"apikey":SB_KEY,"Content-Type":"application/json"},body:JSON.stringify({email,password,data:{full_name:name,phone:phone,account_type:role}})});
+  const redirectTo=window.location.origin+window.location.pathname;
+  const r=await fetch(SB_URL+"/auth/v1/signup?redirect_to="+encodeURIComponent(redirectTo),{method:"POST",headers:{"apikey":SB_KEY,"Content-Type":"application/json"},body:JSON.stringify({email,password,data:{full_name:name,phone:phone,account_type:role}})});
   const data=await r.json();if(!r.ok)throw new Error(data.msg||data.message||data.error_description||"تعذّر إنشاء الحساب");
   if(data.access_token){currentSession=data;localStorage.setItem("lammetDarSession",JSON.stringify(data));await loadProfile();showAccount();toast("تم إنشاء الحساب بنجاح")}
   else box.textContent="تم إرسال طلب التسجيل. افتحي بريدك الإلكتروني واضغطي رابط التأكيد، ثم عودي لتسجيل الدخول.";
