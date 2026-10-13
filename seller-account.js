@@ -42,7 +42,9 @@ function showAuth(mode){
  let h='<div class="note">استخدمي بريدك الإلكتروني وكلمة مرور خاصة بك. لا ترسلي كلمة المرور لأي شخص.</div>';
  if(signup)h+='<div class="field"><label>الاسم الكامل</label><input id="authName" autocomplete="name" placeholder="اسمك الكامل"></div><div class="field"><label>رقم الهاتف (اختياري)</label><input id="authPhone" type="tel" placeholder="05 / 06 / 07"></div><div class="field"><label>نوع الحساب</label><select id="authRole" style="width:100%;border:1px solid #ded7c8;border-radius:11px;padding:13px;background:white"><option value="seller">صاحبة منتجات منزلية</option><option value="customer">زبونة</option></select></div>';
  h+='<div class="field"><label>البريد الإلكتروني</label><input id="authEmail" type="email" autocomplete="email" placeholder="name@example.com"></div><div class="field"><label>كلمة المرور</label><input id="authPassword" type="password" autocomplete="'+(signup?"new-password":"current-password")+'" placeholder="8 أحرف أو أكثر"></div><div id="authMessage" class="note"></div>';
- h+='<button class="primary" onclick="'+(signup?"signUp()":"signIn()")+'">'+(signup?"إنشاء الحساب":"دخول")+'</button><button class="primary" style="background:#e8e0d2;color:#153c2c" onclick="showAuth(\''+(signup?"login":"signup")+'\')">'+(signup?"لديك حساب؟ تسجيل الدخول":"ليس لديك حساب؟ إنشاء حساب")+'</button>';
+ h+='<button class="primary" onclick="'+(signup?"signUp()":"signIn()")+'">'+(signup?"إنشاء الحساب":"دخول")+'</button>';
+ if(!signup)h+='<button class="primary" style="background:#f5efe4;color:#153c2c;border:1px solid #d8cdb9" onclick="resendConfirmation()">إعادة إرسال رسالة تأكيد البريد</button>';
+ h+='<button class="primary" style="background:#e8e0d2;color:#153c2c" onclick="showAuth(\\''+(signup?"login":"signup")+'\\')">'+(signup?"لديك حساب؟ تسجيل الدخول":"ليس لديك حساب؟ إنشاء حساب")+'</button>';
  openModal(signup?"إنشاء حساب جديد":"تسجيل الدخول",h);
 }
 async function signUp(){
@@ -57,6 +59,18 @@ async function signUp(){
   if(data.access_token){currentSession=data;localStorage.setItem("lammetDarSession",JSON.stringify(data));await loadProfile();showAccount();toast("تم إنشاء الحساب بنجاح")}
   else box.textContent="تم إرسال طلب التسجيل. افتحي بريدك الإلكتروني واضغطي رابط التأكيد، ثم عودي لتسجيل الدخول.";
  }catch(e){box.textContent=e.message||"حدث خطأ. حاولي مجددًا."}
+}
+async function resendConfirmation(){
+ const email=document.getElementById("authEmail").value.trim(),box=document.getElementById("authMessage");
+ if(!email){box.textContent="أدخلي البريد الإلكتروني أولًا، ثم اضغطي إعادة الإرسال.";return}
+ box.textContent="جارٍ إرسال رسالة تأكيد جديدة…";
+ try{
+  const redirectTo=window.location.origin+window.location.pathname;
+  const r=await fetch(SB_URL+"/auth/v1/resend",{method:"POST",headers:{"apikey":SB_KEY,"Content-Type":"application/json"},body:JSON.stringify({type:"signup",email:email,options:{emailRedirectTo:redirectTo}})});
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(data.msg||data.message||data.error_description||"تعذّر إرسال رسالة التأكيد.");
+  box.textContent="إذا كان هذا البريد مسجلًا ولم يتم تأكيده، فستصلك رسالة جديدة. افحصي البريد الوارد ومجلد الرسائل غير المرغوب فيها.";
+ }catch(e){box.textContent=e.message||"تعذّر إرسال رسالة التأكيد. حاولي لاحقًا."}
 }
 async function signIn(){
  const email=document.getElementById("authEmail").value.trim(),password=document.getElementById("authPassword").value,box=document.getElementById("authMessage");
