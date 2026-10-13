@@ -37,7 +37,7 @@ function showAccount(){
   const seller=profile.role==="seller"||profile.role==="admin";
   let h='<div class="cart-line"><span class="emoji">👤</span><div class="details"><h3>'+esc(profile.full_name||"عضو لَمّة الدار")+'</h3><p>'+(seller?"حساب صاحبة منتجات":"حساب زبونة")+' · '+esc(currentSession.user.email)+'</p></div></div>';
   if(!currentProfile)h+='<p class="note">تم تسجيل الدخول، لكن بيانات الملف الشخصي لم تُحمّل بعد. يمكنك إعادة فتح الحساب لاحقًا؛ إذا استمرت المشكلة، يلزم فحص سجل الملف الشخصي.</p>';
-  if(seller&&currentProfile)h+='<button class="primary" onclick="showAddProduct()">＋ إضافة منتج جديد</button>';
+  if(seller&&currentProfile)h+='<button class="primary" onclick="showMyProducts()">📦 إدارة منتجاتي</button><button class="primary" onclick="showAddProduct()">＋ إضافة منتج جديد</button>';
   else if(!seller)h+='<p class="note">لبيع منتجاتك المنزلية، أنشئي حسابًا جديدًا واختاري «صاحبة منتجات» عند التسجيل.</p>';
   h+='<button class="primary" style="background:#7a342c" onclick="signOut()">تسجيل الخروج</button>';
   openModal("حسابي",h);
@@ -89,6 +89,35 @@ async function signIn(){
  }catch(e){box.textContent=e.message||"تعذّر تسجيل الدخول."}
 }
 function signOut(){currentSession=null;currentProfile=null;localStorage.removeItem("lammetDarSession");closeModal();toast("تم تسجيل الخروج")}
+async function showMyProducts(){
+ if(!currentSession||!currentProfile||!["seller","admin"].includes(currentProfile.role)){toast("يجب الدخول بحساب صاحبة منتجات");return}
+ openModal("إدارة منتجاتي",'<p class="note">هذه المنتجات مرتبطة بحسابك. يمكنك إخفاء المنتج من المتجر أو حذفه نهائيًا.</p><div id="myProductsList" class="note">جارٍ تحميل منتجاتك…</div>');
+ try{
+  const r=await fetch(SB_URL+"/rest/v1/products?select=id,name,price_dzd,available,created_at&seller_id=eq."+encodeURIComponent(currentSession.user.id)+"&order=created_at.desc",{headers:authHeaders()});
+  const rows=await r.json().catch(()=>[]);
+  if(!r.ok)throw new Error(rows.message||"تعذّر تحميل المنتجات");
+  const el=document.getElementById("myProductsList");if(!el)return;
+  if(!rows.length){el.innerHTML='<div class="empty">لا توجد منتجات مرتبطة بحسابك بعد. أضيفي أول منتج للبدء.</div>';return}
+  el.innerHTML=rows.map(p=>'<div class="cart-line"><span class="emoji">🧺</span><div class="details"><h3>'+esc(p.name)+'</h3><p>'+money(Number(p.price_dzd))+' · '+(p.available?'ظاهر في المتجر':'مخفي عن المتجر')+'</p><button class="primary" style="padding:9px;margin-top:7px" onclick="toggleProductAvailability('+JSON.stringify(String(p.id))+','+(!p.available)+')">'+(p.available?'إخفاء المنتج':'إظهار المنتج')+'</button><button class="primary" style="padding:9px;background:#7a342c;margin-top:5px" onclick="deleteMyProduct('+JSON.stringify(String(p.id))+')">حذف المنتج</button></div></div>').join("");
+ }catch(e){const el=document.getElementById("myProductsList");if(el)el.textContent=e.message||"حدث خطأ أثناء تحميل المنتجات."}
+}
+async function toggleProductAvailability(id,available){
+ if(!currentSession||!currentProfile||!["seller","admin"].includes(currentProfile.role))return;
+ try{
+  const r=await fetch(SB_URL+"/rest/v1/products?id=eq."+encodeURIComponent(id)+"&seller_id=eq."+encodeURIComponent(currentSession.user.id),{method:"PATCH",headers:{...authHeaders(),"Prefer":"return=minimal"},body:JSON.stringify({available:available})});
+  if(!r.ok)throw new Error("تعذّر تحديث المنتج. تحققي من صلاحيات الحساب.");
+  toast(available?"تم إظهار المنتج":"تم إخفاء المنتج");showMyProducts();
+ }catch(e){toast(e.message||"تعذّر تحديث المنتج")}
+}
+async function deleteMyProduct(id){
+ if(!currentSession||!currentProfile||!["seller","admin"].includes(currentProfile.role))return;
+ if(!confirm("هل تريدين حذف هذا المنتج نهائيًا؟"))return;
+ try{
+  const r=await fetch(SB_URL+"/rest/v1/products?id=eq."+encodeURIComponent(id)+"&seller_id=eq."+encodeURIComponent(currentSession.user.id),{method:"DELETE",headers:authHeaders()});
+  if(!r.ok)throw new Error("تعذّر حذف المنتج. تحققي من الصلاحيات.");
+  toast("تم حذف المنتج");showMyProducts();
+ }catch(e){toast(e.message||"تعذّر حذف المنتج")}
+}
 function showAddProduct(){
  if(!currentSession||!currentProfile||!["seller","admin"].includes(currentProfile.role)){toast("يجب الدخول بحساب صاحبة منتجات");return}
  const h='<p class="note">سيُحفظ المنتج في قاعدة البيانات ويظهر في المتجر بعد نجاح الحفظ. أضيفي فقط منتجات حقيقية متوفرة لديك.</p><div class="field"><label>اسم المنتج</label><input id="newProductName" placeholder="مثال: كسرة منزلية"></div><div class="field"><label>السعر بالدينار الجزائري</label><input id="newProductPrice" type="number" min="1" step="1" placeholder="مثال: 150"></div><div class="field"><label>صورة المنتج (اختياري، JPG/PNG/WebP حتى 5MB)</label><input id="newProductImage" type="file" accept="image/jpeg,image/png,image/webp"></div><div id="productMessage" class="note"></div><button class="primary" onclick="saveRealProduct()">حفظ ونشر المنتج</button>';
