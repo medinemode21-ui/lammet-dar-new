@@ -232,7 +232,7 @@ function renderProducts(){
  if(!list.length){el.innerHTML='<div class="empty">لا توجد منتجات مطابقة للبحث حالياً.</div>';return}
  el.innerHTML=list.map(p=>`
  <article class="product">
-  <div class="product-photo"><span>${p.emoji}</span><span class="tag">منتوج منزلي</span></div>
+  <div class="product-photo">${p.image ? `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover">` : `<span>${p.emoji}</span>`}<span class="tag">منتوج منزلي</span></div>
   <div class="product-info">
    <h3>${p.name}</h3>
    <p class="description">${p.desc}</p>
@@ -312,7 +312,11 @@ function showCategories(){document.getElementById("categories").scrollIntoView({
 function goHome(btn){document.querySelectorAll(".nav-item").forEach(b=>b.classList.remove("active"));btn.classList.add("active");window.scrollTo({top:0,behavior:"smooth"})}
 function showOrders(){openModal("طلباتي",'<div class="empty">📦<br><br>سيظهر سجل طلباتك هنا بعد ربط قاعدة البيانات.</div>')}
 function showAccount(){openModal("حسابي",'<div class="empty">👤<br><br>سيتم إعداد تسجيل الدخول وحسابات الزبائن والمنتِجات في المرحلة القادمة.</div>')}
+window.lammetSetProducts = function(rows){ productsData = rows; renderProducts(); };
+window.lammetDemoProducts = productsData;
+window.lammetRenderProducts = renderProducts;
 renderProducts();
 </script>
+<script src="./supabase-products.js"></script>
 </body>
 </html>
