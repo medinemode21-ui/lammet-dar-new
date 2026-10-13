@@ -26,6 +26,7 @@
         };
       });
       window.lammetUseLiveProducts = true;
+      window.lammetSetProducts(window.lammetDemoProducts);
       if (status) status.textContent = "منتجات من المتجر";
     } else {
       if (status) status.textContent = "عرض تجريبي";
