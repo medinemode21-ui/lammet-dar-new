@@ -236,7 +236,7 @@ function renderProducts(){
   <div class="product-info">
    <h3>${p.name}</h3>
    <p class="description">${p.desc}</p>
-   <div class="price-row"><div class="price">${money(p.price)}<br><small>للوحدة</small></div><button class="add" onclick="addToCart(${p.id})" aria-label="أضف إلى السلة">+</button></div>
+   <div class="price-row"><div class="price">${money(p.price)}<br><small>للوحدة</small></div><button class="add" onclick="addToCart(${JSON.stringify(String(p.id))})" aria-label="أضف إلى السلة">+</button></div>
    <div class="seller">👩‍🍳 ${p.seller}</div>
   </div>
  </article>`).join("");
@@ -275,7 +275,7 @@ function openCart(){
  let total=0;
  let html=ids.map(id=>{
   const p=productsData.find(x=>String(x.id)===String(id));const qty=cart[id];total+=p.price*qty;
-  return `<div class="cart-line"><span class="emoji">${p.emoji}</span><div class="details"><h3>${p.name}</h3><p>${money(p.price)} للوحدة</p></div><div class="qty"><button onclick="changeQty(${p.id},-1)">−</button><span>${qty}</span><button onclick="changeQty(${p.id},1)">+</button></div></div>`;
+  return `<div class="cart-line"><span class="emoji">${p.emoji}</span><div class="details"><h3>${p.name}</h3><p>${money(p.price)} للوحدة</p></div><div class="qty"><button onclick="changeQty(${JSON.stringify(String(p.id))},-1)">−</button><span>${qty}</span><button onclick="changeQty(${JSON.stringify(String(p.id))},1)">+</button></div></div>`;
  }).join("");
  html+=`<div class="total"><span>المجموع</span><span>${money(total)}</span></div>
  <p class="note">هذه نسخة تجريبية. لم يتم إعداد التوصيل أو الدفع الإلكتروني بعد.</p>
