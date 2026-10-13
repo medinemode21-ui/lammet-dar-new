@@ -274,7 +274,7 @@ function openCart(){
  }
  let total=0;
  let html=ids.map(id=>{
-  const p=productsData.find(x=>x.id===Number(id));const qty=cart[id];total+=p.price*qty;
+  const p=productsData.find(x=>String(x.id)===String(id));const qty=cart[id];total+=p.price*qty;
   return `<div class="cart-line"><span class="emoji">${p.emoji}</span><div class="details"><h3>${p.name}</h3><p>${money(p.price)} للوحدة</p></div><div class="qty"><button onclick="changeQty(${p.id},-1)">−</button><span>${qty}</span><button onclick="changeQty(${p.id},1)">+</button></div></div>`;
  }).join("");
  html+=`<div class="total"><span>المجموع</span><span>${money(total)}</span></div>
@@ -289,7 +289,7 @@ function changeQty(id,delta){
 function checkout(){
  const ids=Object.keys(cart).filter(id=>cart[id]>0);
  if(!ids.length){openCart();return}
- let total=ids.reduce((s,id)=>s+productsData.find(p=>p.id===Number(id)).price*cart[id],0);
+ let total=ids.reduce((s,id)=>s+productsData.find(p=>String(p.id)===String(id)).price*cart[id],0);
  openModal("معلومات الطلب",`
  <p class="note">املأ المعلومات التالية لتجربة واجهة الطلب. لن تُرسل المعلومات إلى متجر أو قاعدة بيانات في هذه المرحلة.</p>
  <div class="field"><label>الاسم الكامل</label><input id="customerName" placeholder="اكتب اسمك"></div>
