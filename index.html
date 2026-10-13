@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#153c2c">
+<title>لَمّة الدار | خيرات الدار الجزائرية</title>
+<style>
+:root {
+  --green:#153c2c;
+  --green2:#24583e;
+  --gold:#d7ad59;
+  --cream:#fbf7ee;
+  --text:#242820;
+  --muted:#77796f;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--cream);color:var(--text);
+  font-family:Arial,"Noto Sans Arabic",sans-serif;padding-bottom:85px
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.top{
+  background:var(--green);color:white;padding:22px 18px 18px;
+  border-radius:0 0 25px 25px
+}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{
+  width:47px;height:47px;border-radius:15px;background:var(--gold);
+  display:grid;place-items:center;font-size:27px;color:var(--green)
+}
+.brand h1{font-size:23px;margin:0 0 5px}
+.brand p{font-size:12px;color:#e1e7dd;margin:0}
+.location{font-size:12px;color:#e1e7dd;margin-top:17px}
+.search{
+  margin-top:17px;background:white;border-radius:13px;padding:0 12px;
+  display:flex;align-items:center;gap:8px
+}
+.search input{
+  border:0;outline:0;width:100%;padding:14px 3px;color:#222;background:transparent
+}
+.section{padding:19px 15px 0}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.section-title h2{font-size:18px;margin:0}
+.section-title span{font-size:12px;color:var(--muted)}
+.hero{
+  background:linear-gradient(120deg,#214f38,#102d22);color:white;
+  margin:18px 15px 0;border-radius:19px;padding:21px 18px;
+  position:relative;overflow:hidden;min-height:155px
+}
+.hero:after{
+  content:"🥘";position:absolute;left:10px;bottom:9px;font-size:67px;
+  opacity:.95;transform:rotate(-10deg)
+}
+.hero small{color:var(--gold);font-weight:bold}
+.hero h2{font-size:22px;line-height:1.5;margin:8px 0;max-width:75%}
+.hero p{font-size:12px;color:#e1e7dd;margin:0}
+.categories{display:flex;gap:10px;overflow-x:auto;padding:3px 0 8px}
+.category{
+  border:1px solid #e8e0d0;background:white;border-radius:14px;
+  min-width:92px;padding:12px 9px;text-align:center;color:var(--text)
+}
+.category .emoji{display:block;font-size:26px;margin-bottom:8px}
+.category span:last-child{font-size:12px}
+.category.active{background:var(--green);color:white;border-color:var(--green)}
+.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.product{
+  background:white;border-radius:16px;overflow:hidden;
+  border:1px solid #eee9df;min-width:0
+}
+.product-photo{
+  height:116px;background:#f0e8d8;display:grid;place-items:center;
+  font-size:57px;position:relative
+}
+.tag{
+  position:absolute;top:9px;right:8px;background:#fff8e6;color:#8a6423;
+  padding:5px 7px;border-radius:7px;font-size:10px
+}
+.product-info{padding:11px}
+.product h3{font-size:14px;margin:0 0 7px;line-height:1.5}
+.product .description{font-size:11px;color:var(--muted);margin:0 0 9px}
+.price-row{display:flex;align-items:center;justify-content:space-between;gap:4px}
+.price{font-size:14px;font-weight:bold;color:var(--green)}
+.price small{font-size:10px;font-weight:normal}
+.add{
+  border:0;border-radius:10px;background:var(--green);color:white;
+  width:33px;height:33px;font-size:21px
+}
+.seller{font-size:10px;color:var(--muted);margin-top:9px}
+.empty{grid-column:1/-1;text-align:center;padding:25px;color:var(--muted)}
+.trust{
+  margin:20px 15px;background:#f0eadc;border-radius:15px;
+  padding:15px;display:flex;gap:10px;align-items:center;font-size:12px;line-height:1.8
+}
+.bottom{
+  position:fixed;bottom:0;left:0;right:0;background:white;
+  display:flex;justify-content:space-around;padding:10px 3px calc(10px + env(safe-area-inset-bottom));
+  border-top:1px solid #eee5d8;z-index:5
+}
+.nav-item{border:0;background:transparent;color:#777;font-size:10px;min-width:52px}
+.nav-item .nav-icon{display:block;font-size:21px;margin-bottom:4px}
+.nav-item.active{color:var(--green);font-weight:bold}
+.cart-count{
+  display:inline-block;background:var(--gold);color:#222;border-radius:20px;
+  min-width:17px;padding:2px 4px;font-size:10px
+}
+.modal-back{
+  position:fixed;inset:0;background:#0008;z-index:10;
+  display:none;align-items:flex-end;justify-content:center
+}
+.modal-back.show{display:flex}
+.modal{
+  background:var(--cream);width:100%;max-width:550px;max-height:88vh;
+  overflow:auto;border-radius:22px 22px 0 0;padding:20px
+}
+.modal-head{display:flex;justify-content:space-between;align-items:center}
+.modal-head h2{margin:0;font-size:20px}
+.close{border:0;background:#e9e2d5;border-radius:50%;width:35px;height:35px;font-size:20px}
+.cart-line{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid #e8e0d5}
+.cart-line .emoji{font-size:30px}
+.cart-line .details{flex:1}
+.cart-line h3{font-size:14px;margin:0 0 6px}
+.cart-line p{font-size:12px;color:var(--muted);margin:0}
+.qty{display:flex;align-items:center;gap:10px}
+.qty button{border:0;background:#e7e1d4;border-radius:8px;width:27px;height:27px}
+.total{display:flex;justify-content:space-between;font-weight:bold;padding:18px 0}
+.field{margin:13px 0}
+.field label{display:block;font-size:13px;margin-bottom:7px}
+.field input{width:100%;border:1px solid #ded7c8;border-radius:11px;padding:13px;background:white;outline-color:var(--green)}
+.primary{
+  background:var(--green);color:white;border:0;border-radius:12px;
+  width:100%;padding:14px;font-weight:bold;margin-top:8px
+}
+.note{font-size:11px;line-height:1.8;color:var(--muted)}
+.toast{
+  position:fixed;bottom:83px;left:50%;transform:translateX(-50%);
+  background:#173c2c;color:white;border-radius:12px;padding:12px 18px;
+  font-size:13px;display:none;z-index:20;white-space:nowrap
+}
+.toast.show{display:block}
+@media(min-width:600px){
+  .top,.hero,.section,.trust{max-width:700px;margin-left:auto;margin-right:auto}
+  .top{border-radius:0 0 25px 25px}
+  .products{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .hero{margin-top:18px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div class="logo">⌂</div>
+    <div>
+      <h1>لَمّة الدار</h1>
+      <p>خيرات الدار الجزائرية، من يد إلى يد</p>
+    </div>
+  </div>
+  <div class="location">🇩🇿 منتجات منزلية جزائرية • نكهة الدار</div>
+  <div class="search">
+    <span>🔎</span>
+    <input id="searchInput" placeholder="ابحث عن الكسرة، الحلويات..." oninput="renderProducts()">
+  </div>
+</header>
+
+<section class="hero">
+  <small>من دارنا إلى داركم</small>
+  <h2>بنّة الدار تجمعنا ❤️</h2>
+  <p>اكتشفوا منتجات محضّرة بحبّ على الطريقة الجزائرية</p>
+</section>
+
+<section class="section">
+  <div class="section-title"><h2>تصفّح حسب الصنف</h2><span>اكتشف المزيد ←</span></div>
+  <div class="categories" id="categories">
+    <button class="category active" onclick="setCategory('الكل',this)"><span class="emoji">🧺</span><span>الكل</span></button>
+    <button class="category" onclick="setCategory('أكلات تقليدية',this)"><span class="emoji">🥘</span><span>أكلات تقليدية</span></button>
+    <button class="category" onclick="setCategory('حلويات',this)"><span class="emoji">🍰</span><span>حلويات</span></button>
+    <button class="category" onclick="setCategory('خبز ومعجنات',this)"><span class="emoji">🫓</span><span>خبز ومعجنات</span></button>
+    <button class="category" onclick="setCategory('منتجات منزلية',this)"><span class="emoji">🍯</span><span>منتجات منزلية</span></button>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-title"><h2 id="productsTitle">منتجات مختارة لكم</h2><span>أسعار بالدينار</span></div>
+  <div class="products" id="products"></div>
+</section>
+
+<div class="trust">
+  <span style="font-size:28px">🤝</span>
+  <div><strong>نشجّعوا المنتوج المنزلي الجزائري</strong><br>نموذج تجريبي لمتجر يجمع بين صانعات المنتجات المنزلية والزبائن.</div>
+</div>
+
+<nav class="bottom">
+  <button class="nav-item active" onclick="goHome(this)"><span class="nav-icon">🏠</span>الرئيسية</button>
+  <button class="nav-item" onclick="showCategories()"><span class="nav-icon">▦</span>التصنيفات</button>
+  <button class="nav-item" onclick="openCart()"><span class="nav-icon">🛒 <span id="cartCount" class="cart-count">0</span></span>السلة</button>
+  <button class="nav-item" onclick="showOrders()"><span class="nav-icon">📦</span>طلباتي</button>
+  <button class="nav-item" onclick="showAccount()"><span class="nav-icon">👤</span>حسابي</button>
+</nav>
+
+<div class="modal-back" id="modalBack" onclick="backdropClose(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modalTitle">سلة المشتريات</h2>
+      <button class="close" onclick="closeModal()">×</button>
+    </div>
+    <div id="modalContent"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const productsData = [
+ {id:1,name:"كسرة الدار",category:"خبز ومعجنات",price:150,emoji:"🫓",desc:"كسرة تقليدية محضّرة في المنزل",seller:"منتوج منزلي"},
+ {id:2,name:"مقروط بالعسل",category:"حلويات",price:500,emoji:"🍯",desc:"حلوى تقليدية للمناسبات",seller:"حلويات الدار"},
+ {id:3,name:"محاجب جزائرية",category:"أكلات تقليدية",price:120,emoji:"🥙",desc:"محضّرة بالطريقة التقليدية",seller:"مطبخ البيت"},
+ {id:4,name:"صابلي منزلي",category:"حلويات",price:400,emoji:"🍪",desc:"حلويات منزلية متنوعة",seller:"حلويات الدار"},
+ {id:5,name:"شخشوخة تقليدية",category:"أكلات تقليدية",price:700,emoji:"🥘",desc:"طبق تقليدي للمائدة الجزائرية",seller:"مطبخ البيت"},
+ {id:6,name:"عسل طبيعي",category:"منتجات منزلية",price:1200,emoji:"🍯",desc:"منتوج معروض كنموذج تجريبي",seller:"خيرات الدار"},
+ {id:7,name:"مطلوع الدار",category:"خبز ومعجنات",price:100,emoji:"🍞",desc:"خبز منزلي طازج",seller:"منتوج منزلي"},
+ {id:8,name:"غريبية",category:"حلويات",price:350,emoji:"🍪",desc:"حلوى تقليدية تذوب في الفم",seller:"حلويات الدار"}
+];
+let activeCategory="الكل";
+let cart={};
+function money(n){return n.toLocaleString("fr-DZ")+" دج"}
+function renderProducts(){
+ const q=document.getElementById("searchInput").value.trim().toLowerCase();
+ const list=productsData.filter(p=>(activeCategory==="الكل"||p.category===activeCategory)&&(p.name+" "+p.category+" "+p.desc).toLowerCase().includes(q));
+ document.getElementById("productsTitle").textContent=activeCategory==="الكل"?"منتجات مختارة لكم":activeCategory;
+ const el=document.getElementById("products");
+ if(!list.length){el.innerHTML='<div class="empty">لا توجد منتجات مطابقة للبحث حالياً.</div>';return}
+ el.innerHTML=list.map(p=>`
+ <article class="product">
+  <div class="product-photo"><span>${p.emoji}</span><span class="tag">منتوج منزلي</span></div>
+  <div class="product-info">
+   <h3>${p.name}</h3>
+   <p class="description">${p.desc}</p>
+   <div class="price-row"><div class="price">${money(p.price)}<br><small>للوحدة</small></div><button class="add" onclick="addToCart(${p.id})" aria-label="أضف إلى السلة">+</button></div>
+   <div class="seller">👩‍🍳 ${p.seller}</div>
+  </div>
+ </article>`).join("");
+}
+function setCategory(cat,btn){
+ activeCategory=cat;
+ document.querySelectorAll(".category").forEach(b=>b.classList.remove("active"));
+ btn.classList.add("active");
+ renderProducts();
+}
+function addToCart(id){
+ cart[id]=(cart[id]||0)+1;
+ updateCart();
+ toast("تمت إضافة المنتج إلى السلة ✓");
+}
+function updateCart(){
+ document.getElementById("cartCount").textContent=Object.values(cart).reduce((a,b)=>a+b,0);
+}
+function toast(msg){
+ const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");
+ setTimeout(()=>t.classList.remove("show"),1800);
+}
+function openModal(title,html){
+ document.getElementById("modalTitle").textContent=title;
+ document.getElementById("modalContent").innerHTML=html;
+ document.getElementById("modalBack").classList.add("show");
+}
+function closeModal(){document.getElementById("modalBack").classList.remove("show")}
+function backdropClose(e){if(e.target.id==="modalBack")closeModal()}
+function openCart(){
+ const ids=Object.keys(cart).filter(id=>cart[id]>0);
+ if(!ids.length){
+  openModal("سلة المشتريات",'<div class="empty">🛒<br><br>السلة فارغة. أضف منتجاتك المفضلة!</div><button class="primary" onclick="closeModal()">متابعة التسوق</button>');
+  return;
+ }
+ let total=0;
+ let html=ids.map(id=>{
+  const p=productsData.find(x=>x.id===Number(id));const qty=cart[id];total+=p.price*qty;
+  return `<div class="cart-line"><span class="emoji">${p.emoji}</span><div class="details"><h3>${p.name}</h3><p>${money(p.price)} للوحدة</p></div><div class="qty"><button onclick="changeQty(${p.id},-1)">−</button><span>${qty}</span><button onclick="changeQty(${p.id},1)">+</button></div></div>`;
+ }).join("");
+ html+=`<div class="total"><span>المجموع</span><span>${money(total)}</span></div>
+ <p class="note">هذه نسخة تجريبية. لم يتم إعداد التوصيل أو الدفع الإلكتروني بعد.</p>
+ <button class="primary" onclick="checkout()">متابعة الطلب</button>`;
+ openModal("سلة المشتريات",html);
+}
+function changeQty(id,delta){
+ cart[id]=(cart[id]||0)+delta;if(cart[id]<=0)delete cart[id];
+ updateCart();openCart();
+}
+function checkout(){
+ const ids=Object.keys(cart).filter(id=>cart[id]>0);
+ if(!ids.length){openCart();return}
+ let total=ids.reduce((s,id)=>s+productsData.find(p=>p.id===Number(id)).price*cart[id],0);
+ openModal("معلومات الطلب",`
+ <p class="note">املأ المعلومات التالية لتجربة واجهة الطلب. لن تُرسل المعلومات إلى متجر أو قاعدة بيانات في هذه المرحلة.</p>
+ <div class="field"><label>الاسم الكامل</label><input id="customerName" placeholder="اكتب اسمك"></div>
+ <div class="field"><label>رقم الهاتف</label><input id="customerPhone" type="tel" placeholder="05 أو 06 أو 07"></div>
+ <div class="field"><label>الولاية والبلدية</label><input id="customerCity" placeholder="مثال: سطيف، سطيف"></div>
+ <div class="field"><label>العنوان</label><input id="customerAddress" placeholder="الحي والشارع"></div>
+ <div class="total"><span>المجموع التقديري</span><span>${money(total)}</span></div>
+ <button class="primary" onclick="submitDemoOrder()">تأكيد تجريبي</button>
+ `);
+}
+function submitDemoOrder(){
+ const name=document.getElementById("customerName").value.trim();
+ const phone=document.getElementById("customerPhone").value.trim();
+ const city=document.getElementById("customerCity").value.trim();
+ if(!name||!phone||!city){toast("يرجى ملء الاسم والهاتف والولاية");return}
+ openModal("تمت التجربة بنجاح",`<div class="empty">✅<br><br>شكراً ${name}! واجهة الطلب تعمل تجريبياً.<br><br>لم يتم إرسال طلب حقيقي أو حفظ بياناتك.</div><button class="primary" onclick="finishDemo()">العودة إلى المتجر</button>`);
+}
+function finishDemo(){cart={};updateCart();closeModal();toast("يمكننا الآن تطوير نظام الطلبات الحقيقي")}
+function showCategories(){document.getElementById("categories").scrollIntoView({behavior:"smooth",block:"center"})}
+function goHome(btn){document.querySelectorAll(".nav-item").forEach(b=>b.classList.remove("active"));btn.classList.add("active");window.scrollTo({top:0,behavior:"smooth"})}
+function showOrders(){openModal("طلباتي",'<div class="empty">📦<br><br>سيظهر سجل طلباتك هنا بعد ربط قاعدة البيانات.</div>')}
+function showAccount(){openModal("حسابي",'<div class="empty">👤<br><br>سيتم إعداد تسجيل الدخول وحسابات الزبائن والمنتِجات في المرحلة القادمة.</div>')}
+renderProducts();
+</script>
+</body>
+</html>
