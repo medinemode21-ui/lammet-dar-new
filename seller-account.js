@@ -23,11 +23,16 @@ async function loadProfile(){
  if(r.ok){const rows=await r.json();currentProfile=rows[0]||null}
 }
 function showAccount(){
- if(currentSession&&currentProfile){
-  const seller=currentProfile.role==="seller"||currentProfile.role==="admin";
-  let h='<div class="cart-line"><span class="emoji">👤</span><div class="details"><h3>'+esc(currentProfile.full_name||"عضو لَمّة الدار")+'</h3><p>'+(seller?"حساب صاحبة منتجات":"حساب زبونة")+' · '+esc(currentSession.user.email)+'</p></div></div>';
-  if(seller)h+='<button class="primary" onclick="showAddProduct()">＋ إضافة منتج جديد</button>';
-  else h+='<p class="note">لبيع منتجاتك المنزلية، أنشئي حسابًا جديدًا واختاري «صاحبة منتجات» عند التسجيل.</p>';
+ if(currentSession&&currentSession.user){
+  // A confirmed auth session is valid even if the profile query is temporarily empty.
+  // Fall back to signup metadata so users are not incorrectly sent back to the login form.
+  const meta=currentSession.user.user_metadata||{};
+  const profile=currentProfile||{full_name:meta.full_name||"عضو لَمّة الدار",role:meta.account_type==="seller"?"seller":"customer",phone:meta.phone||""};
+  const seller=profile.role==="seller"||profile.role==="admin";
+  let h='<div class="cart-line"><span class="emoji">👤</span><div class="details"><h3>'+esc(profile.full_name||"عضو لَمّة الدار")+'</h3><p>'+(seller?"حساب صاحبة منتجات":"حساب زبونة")+' · '+esc(currentSession.user.email)+'</p></div></div>';
+  if(!currentProfile)h+='<p class="note">تم تسجيل الدخول، لكن بيانات الملف الشخصي لم تُحمّل بعد. يمكنك إعادة فتح الحساب لاحقًا؛ إذا استمرت المشكلة، يلزم فحص سجل الملف الشخصي.</p>';
+  if(seller&&currentProfile)h+='<button class="primary" onclick="showAddProduct()">＋ إضافة منتج جديد</button>';
+  else if(!seller)h+='<p class="note">لبيع منتجاتك المنزلية، أنشئي حسابًا جديدًا واختاري «صاحبة منتجات» عند التسجيل.</p>';
   h+='<button class="primary" style="background:#7a342c" onclick="signOut()">تسجيل الخروج</button>';
   openModal("حسابي",h);
  }else showAuth("login");
